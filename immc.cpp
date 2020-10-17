@@ -36,7 +36,7 @@ int main() {
 
     for (int i = 0; i < vehicles.size(); i++) {
         int P;
-        P = G / ((L / vehicles[i].length) * H);
+        P = G / (int(L / vehicles[i].length) * H);
         cout << "El precio de " << vehicles[i].name << " debiera ser: $" << P << endl;
 
     }
