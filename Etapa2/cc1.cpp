@@ -86,7 +86,9 @@ vector<question> parseQuestion(vector<string> rows)
                 if (k == 0)
                 {
                     current.question = rows[i].substr(0, j);
-                } else if (k % 2 != 0) {
+                }
+                else if (k % 2 != 0)
+                {
                     current_option.first = rows[i].substr(0, j);
                 }
                 else
@@ -104,12 +106,15 @@ vector<question> parseQuestion(vector<string> rows)
     return db;
 }
 
-vector<string> getAnswers(vector<question> questions) {
+vector<string> getAnswers(vector<question> questions)
+{
     vector<string> answers;
-    for(int i = 0; i < questions.size(); i++) {
+    for (int i = 0; i < questions.size(); i++)
+    {
         print(questions[i].question);
-        for(int j = 0; j < questions[i].options.size(); j++) {
-            cout << questions[i].options[j].first << ")" << questions[i].options[j].second << endl; 
+        for (int j = 0; j < questions[i].options.size(); j++)
+        {
+            cout << questions[i].options[j].first << ")" << questions[i].options[j].second << endl;
         }
         print("Que opción se ajusta mejor a tu pensamiento?");
         string answer;
@@ -120,35 +125,91 @@ vector<string> getAnswers(vector<question> questions) {
     return answers;
 }
 
-string match(vector<candidant> candidants, vector<string> answers) {
+vector<string> match(vector<candidant> candidants, candidant thisVoter)
+{
+    vector<string> answers = thisVoter.answers;
     vector<int> compatibility;
-    for(int i = 0; i < candidants.size(); i++) {
+    for (int i = 0; i < candidants.size(); i++)
+    {
         int current = 0;
-        for(int j = 0; j < candidants[i].answers.size(); j++) {
-            if( candidants[i].answers[j] == answers[j] ) {
+        for (int j = 0; j < candidants[i].answers.size(); j++)
+        {
+            if (candidants[i].answers[j] == answers[j])
+            {
                 current++;
             }
         }
         compatibility.push_back(current);
     }
-    pair<int, int> maximum(INT_MIN, 0);
-    for(int i = 0; i < compatibility.size(); i++) {
-        if(compatibility[i] > maximum.first) {
-            maximum.first = compatibility[i];
-            maximum.second = i;
+    vector<pair<int, int>> maximum;
+    pair<int, int> first(INT_MIN, 0);
+    maximum.push_back(first);
+    for (int i = 0; i < compatibility.size(); i++)
+    {
+        if (compatibility[i] > maximum[0].first)
+        {
+            maximum.clear();
+            pair<int, int> current;
+            current.first = compatibility[i];
+            current.second = i;
+            maximum.push_back(current);
+        }
+        else if (compatibility[i] == maximum[0].first)
+        {
+            pair<int, int> current;
+            current.first = compatibility[i];
+            current.second = i;
+            maximum.push_back(current);
         }
     }
-    return candidants[maximum.second].name;
-}
 
+    vector<string> optimal;
+    for (int i = 0; i < maximum.size(); i++)
+    {
+        optimal.push_back(candidants[maximum[i].second].name);
+    }
+
+    cout << "Los candidatos mas optimos para " << thisVoter.name << " son: ";
+    for (int i = 0; i < optimal.size(); i++)
+    {
+
+        cout << optimal[i] << ", ";
+    }
+    print(" ");
+}
 
 int main()
 {
     vector<candidant> candidants = parseCandidant(readFile("db.csv"));
+    vector<candidant> voters;
+    char option;
 
-    vector<string> answers = getAnswers(parseQuestion(readFile("questions.csv")));
+    print("Oprima \"A\" para usar los votantes de la base de datos o \"B\" para un votante personalizado");
+    
+    cin >> option;
+    
+    if (option == 'A' || option == 'a')
+    {
+        voters = parseCandidant(readFile("participants.csv"));
+    }
+    else if (option == 'B' || option == 'b')
+    {
+        print("Cual es su nombre?");
+        string name;
+        cin >> name;
+        vector<string> answers = getAnswers(parseQuestion(readFile("questions.csv")));
+        candidant customCandidate;
+        customCandidate.name = name;
+        customCandidate.answers = answers;
+        voters.push_back(customCandidate);
+    }
+    else
+    {
+        print("unknown command");
+    }
 
-    print(match(candidants, answers));
+    for (int i = 0; i < voters.size(); i++)
+        match(candidants, voters[i]);
 
     return 0;
 }
