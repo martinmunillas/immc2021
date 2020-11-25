@@ -74,14 +74,14 @@ vector<question> parseQuestion(vector<string> rows)
     vector<question> db;
     for (int i = 0; i < rows.size(); i++)
     {
-        int j = 0, k = 0;
+        int j = -1, k = 0;
         question current;
 
         pair<string, string> current_option;
         while (rows[i].size())
         {
             j++;
-            if (rows[i][j] == ',')
+            if (rows[i][j] == ';')
             {
                 if (k == 0)
                 {
@@ -96,7 +96,7 @@ vector<question> parseQuestion(vector<string> rows)
                 }
                 rows[i] = rows[i].substr(j + 1);
                 k++;
-                j = 0;
+                j = -1;
             }
         }
         db.push_back(current);
@@ -146,9 +146,9 @@ int main()
 {
     vector<candidant> candidants = parseCandidant(readFile("db.csv"));
 
-    vector<string> answers = getAnswers(parseQuestion(readFile("cuestions.csv")));
+    vector<string> answers = getAnswers(parseQuestion(readFile("questions.csv")));
 
     print(match(candidants, answers));
 
-    return 0
+    return 0;
 }
