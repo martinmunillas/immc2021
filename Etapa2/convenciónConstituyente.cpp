@@ -1,14 +1,20 @@
 #include <bits/stdc++.h>
-#include <fstream>
 
 using namespace std;
 
-void print(string message)
+struct candidant
+{
+    string name;
+    vector<char> answers;
+}
+
+void
+print(string message)
 {
     cout << message << endl;
 }
 
-string readFiles(string& fileSrc)
+string readFiles(string fileSrc)
 {
     string file = "";
     std::ifstream src(fileSrc);
@@ -26,25 +32,35 @@ string readFiles(string& fileSrc)
     }
 }
 
-vector<string> parseFile (string& file) {
-    std::vector<std::string> statements;
-   int i = 0;
+vector<vector<string>> parseFile(string file)
+{
+    std::vector<std::string> rows;
+    int i = 0;
     while (file.size())
     {
         i++;
-        if (file[i] == ';')
+        if (file[i] == '\n')
         {
-            statements.push_back(file.substr(0, i + 1));
+            rows.push_back(file.substr(0, i + 1));
             file = file.substr(i + 1, file.size());
             i = 0;
         };
-
-        if (file.size() + 1 == i)
-        {
-            cout << "Missing ';' at " << i << endl;
-            exit(0);
-        }
     };
+    vector<candidant> db;
+    for (int j = 0; j < rows.size(); j++)
+    {
+        int k = 0;
+        candidant current;
+        while (rows[j].size())
+        {
+            if (rows[j][k] == ',')
+            {
+                rows.push_back(file.substr(0, i + 1));
+                file = file.substr(i + 1, file.size());
+                k = 0;
+            }
+        }
+    }
 }
 
 int main()
