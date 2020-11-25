@@ -5,65 +5,70 @@ using namespace std;
 struct candidant
 {
     string name;
-    vector<char> answers;
-}
+    vector<string> answers;
+};
 
-void
-print(string message)
+void print(auto message)
 {
     cout << message << endl;
 }
 
-string readFiles(string fileSrc)
+vector<string> readFile(string fileSrc)
 {
-    string file = "";
+    vector<string> file;
     std::ifstream src(fileSrc);
     if (src.is_open())
     {
         std::string line;
         while (getline(src, line))
         {
-            file += line;
+            file.push_back(line);
         }
     }
     else
     {
         print("Couldn't open the database");
     }
+    return file;
 }
 
-vector<vector<string>> parseFile(string file)
+vector<candidant> parseFile(vector<string> rows)
 {
-    std::vector<std::string> rows;
-    int i = 0;
-    while (file.size())
-    {
-        i++;
-        if (file[i] == '\n')
-        {
-            rows.push_back(file.substr(0, i + 1));
-            file = file.substr(i + 1, file.size());
-            i = 0;
-        };
-    };
     vector<candidant> db;
     for (int j = 0; j < rows.size(); j++)
     {
-        int k = 0;
+        int k = 0, l = 1;
         candidant current;
+
         while (rows[j].size())
         {
             if (rows[j][k] == ',')
             {
-                rows.push_back(file.substr(0, i + 1));
-                file = file.substr(i + 1, file.size());
+                if (l == 1)
+                {
+                    current.name = rows[j].substr(0, k);
+                }
+                else
+                {
+                    current.answers.push_back(rows[j].substr(0, k));
+                }
+                rows[j] = rows[j].substr(k, rows[j].size());
+                l++;
                 k = 0;
             }
+            else
+            {
+                k++;
+            }
         }
+        db.push_back(current);
     }
+    return db;
 }
 
 int main()
 {
-    parseFile(readFiles("db.csv"))
+    vector<candidant> candidants = parseFile(readFile("db.csv"));
+    for (int i = 0; i < candidants.size(); i++)
+        print(candidants[i].name);
 }
