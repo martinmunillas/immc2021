@@ -131,7 +131,14 @@ string match(vector<candidant> candidants, vector<string> answers) {
         }
         compatibility.push_back(current);
     }
-    
+    pair<int, int> maximum(INT_MIN, 0);
+    for(int i = 0; i < compatibility.size(); i++) {
+        if(compatibility[i] > maximum.first) {
+            maximum.first = compatibility[i];
+            maximum.second = i;
+        }
+    }
+    return candidants[maximum.second].name;
 }
 
 
