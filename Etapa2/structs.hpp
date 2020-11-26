@@ -15,7 +15,7 @@ struct question
 {
     string question;
     vector<pair<string, string>> options;
-    float importance;
+    int importance;
 };
 
 #endif

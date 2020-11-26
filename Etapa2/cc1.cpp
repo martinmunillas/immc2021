@@ -4,6 +4,25 @@
 
 using namespace std;
 
+vector<string> getAnswers(vector<question> questions)
+{
+    vector<string> answers;
+    for (int i = 0; i < questions.size(); i++)
+    {
+        print(questions[i].question);
+        for (int j = 0; j < questions[i].options.size(); j++)
+        {
+            cout << questions[i].options[j].first << ")" << questions[i].options[j].second << endl;
+        }
+        print("Que opción se ajusta mejor a tu pensamiento?");
+        string answer;
+        cin >> answer;
+        print(" ");
+        answers.push_back(answer);
+    }
+    return answers;
+}
+
 void match(vector<candidant> candidants, candidant thisVoter)
 {
     vector<string> answers = thisVoter.answers;
@@ -15,7 +34,7 @@ void match(vector<candidant> candidants, candidant thisVoter)
         {
             if (candidants[i].answers[j] == answers[j])
             {
-                current++;
+                current += 100;
             }
         }
         compatibility.push_back(current);
@@ -54,6 +73,7 @@ void match(vector<candidant> candidants, candidant thisVoter)
 
         cout << optimal[i] << ", ";
     }
+    cout << "con un puntaje de " << maximum[0].first << " y una compatibilidad de " << maximum[0].first / answers.size() << "%" << endl;
     print(" ");
 }
 
@@ -64,9 +84,9 @@ int main()
     char option;
 
     print("Oprima \"A\" para usar los votantes de la base de datos o \"B\" para un votante personalizado");
-    
+
     cin >> option;
-    
+
     if (option == 'A' || option == 'a')
     {
         voters = parseCandidant(readFile("participants.csv"));
@@ -87,9 +107,8 @@ int main()
         print("unknown command");
     }
 
-    
-    for (int i = 0; i < voters.size(); i++){
-        print(voters[i].name);
+    for (int i = 0; i < voters.size(); i++)
+    {
         match(candidants, voters[i]);
     }
 

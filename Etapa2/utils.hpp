@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void print(auto message);
+void print(string message);
 
 vector<string> readFile(string fileSrc);
 
@@ -14,6 +14,5 @@ vector<candidant> parseCandidant(vector<string> rows);
 
 vector<question> parseQuestion(vector<string> rows);
 
-vector<string> getAnswers(vector<question> questions);
 
 #endif

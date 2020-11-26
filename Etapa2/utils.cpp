@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void print(auto message)
+void print(string message)
 {
     cout << message << endl;
 };
@@ -95,21 +95,3 @@ vector<question> parseQuestion(vector<string> rows)
     return db;
 }
 
-vector<string> getAnswers(vector<question> questions)
-{
-    vector<string> answers;
-    for (int i = 0; i < questions.size(); i++)
-    {
-        print(questions[i].question);
-        for (int j = 0; j < questions[i].options.size(); j++)
-        {
-            cout << questions[i].options[j].first << ")" << questions[i].options[j].second << endl;
-        }
-        print("Que opción se ajusta mejor a tu pensamiento?");
-        string answer;
-        cin >> answer;
-        print(" ");
-        answers.push_back(answer);
-    }
-    return answers;
-}
