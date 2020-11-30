@@ -5,7 +5,7 @@ using namespace std;
 struct candidant
 {
     string name;
-    vector<string> answers;
+    vector<pair<string, float>> answers;
 };
 
 struct question
@@ -45,6 +45,7 @@ vector<candidant> parseCandidant(vector<string> rows)
     {
         int j = 0, k = 0;
         candidant current;
+        pair<string, float> currentAnswer;
 
         while (rows[i].size())
         {
@@ -55,9 +56,14 @@ vector<candidant> parseCandidant(vector<string> rows)
                 {
                     current.name = rows[i].substr(0, j);
                 }
+                else if (k % 2)
+                {
+                    currentAnswer.first = rows[i].substr(0, j);
+                }
                 else
                 {
-                    current.answers.push_back(rows[i].substr(0, j));
+                    currentAnswer.second = stof(rows[i].substr(0, j));
+                    current.answers.push_back(currentAnswer);
                 }
                 rows[i] = rows[i].substr(j + 1);
                 k++;
@@ -106,12 +112,53 @@ vector<question> parseQuestion(vector<string> rows)
     return db;
 }
 
-vector<string> getAnswers(vector<question> questions)
+vector<pair<string, float>> getAnswers(vector<question> questions)
 {
-    vector<string> answers;
+    vector<pair<string, float>> answers;
     for (int i = 0; i < questions.size(); i++)
     {
+        system("cls");
         print(questions[i].question);
+        print(" ");
+
+        print("Que tan importante consideras este aspecto");
+        print("a) Nada importante");
+        print("b) Poco importante");
+        print("c) Medianamente importante");
+        print("d) Bastante importante");
+        print("e) Muy importante");
+        print(" ");
+        string option;
+        cin >> option;
+        pair<string, float> current;
+
+        if (option == "a")
+        {
+            current.second = 0.0f;
+        }
+        else if (option == "b")
+        {
+            current.second = 0.25f;
+        }
+        else if (option == "c")
+        {
+            current.second = 0.50f;
+        }
+        else if (option == "d")
+        {
+            current.second = 0.75f;
+        }
+        else if (option == "e")
+        {
+            current.second = 1.0f;
+        }
+        else
+        {
+            print("Wrong command");
+            i--;
+            continue;
+        }
+
         for (int j = 0; j < questions[i].options.size(); j++)
         {
             cout << questions[i].options[j].first << ")" << questions[i].options[j].second << endl;
@@ -120,43 +167,49 @@ vector<string> getAnswers(vector<question> questions)
         string answer;
         cin >> answer;
         print(" ");
-        answers.push_back(answer);
+        current.first = answer;
+        answers.push_back(current);
     }
     return answers;
 }
 
 void match(vector<candidant> candidants, candidant thisVoter)
 {
-    vector<string> answers = thisVoter.answers;
-    vector<int> compatibility;
+    vector<float> compatibility;
+
+    vector<float> maxPoints;
+
     for (int i = 0; i < candidants.size(); i++)
     {
-        int current = 0;
+        float current = 0;
+        maxPoints.push_back(0.0f);
         for (int j = 0; j < candidants[i].answers.size(); j++)
         {
-            if (candidants[i].answers[j] == answers[j])
+            maxPoints[i] += candidants[i].answers[j].second * thisVoter.answers[j].second;
+
+            if (candidants[i].answers[j].first == thisVoter.answers[j].first)
             {
-                current++;
+                current += candidants[i].answers[j].second * thisVoter.answers[j].second;
             }
         }
         compatibility.push_back(current);
     }
-    vector<pair<int, int>> maximum;
-    pair<int, int> first(INT_MIN, 0);
+    vector<pair<float, int>> maximum;
+    pair<float, int> first(float(INT_MIN), 0);
     maximum.push_back(first);
     for (int i = 0; i < compatibility.size(); i++)
     {
         if (compatibility[i] > maximum[0].first)
         {
             maximum.clear();
-            pair<int, int> current;
+            pair<float, int> current;
             current.first = compatibility[i];
             current.second = i;
             maximum.push_back(current);
         }
         else if (compatibility[i] == maximum[0].first)
         {
-            pair<int, int> current;
+            pair<float, int> current;
             current.first = compatibility[i];
             current.second = i;
             maximum.push_back(current);
@@ -175,7 +228,7 @@ void match(vector<candidant> candidants, candidant thisVoter)
 
         cout << optimal[i] << ", ";
     }
-    cout << " con una compatibilidad del " << maximum[0].first * 100 / answers.size() << "%" << endl;
+    cout << " con una compatibilidad de " << maximum[0].first * 100 / maxPoints[maximum[0].second] << "%" << endl;
     print(" ");
 }
 
@@ -198,7 +251,7 @@ int main()
         print("Cual es su nombre?");
         string name;
         cin >> name;
-        vector<string> answers = getAnswers(parseQuestion(readFile("questions.csv")));
+        vector<pair<string, float>> answers = getAnswers(parseQuestion(readFile("questions.csv")));
         candidant customCandidate;
         customCandidate.name = name;
         customCandidate.answers = answers;
